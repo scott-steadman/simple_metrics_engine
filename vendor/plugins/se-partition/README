@@ -1,0 +1,45 @@
+== Partition Plugin
+
+This plugin uses native database techniques to partition tables based on field values.
+
+Currently this plugin only works for Postgres and will only partition based on a date or string field.
+
+== Installation
+
+script/plugin install git://github.com/ss/se-partition.git
+
+== Example migration
+
+class CreateUser < ActiveRecord::Migration
+
+  def self.up
+    create_table :users do |t|
+      t.string :name
+      t.timestamps
+    end
+    add_index :users, :created_at
+
+    # Partition user table by week
+    SE::Partition.partition(User, :created_at, :interval => 'week', :verbose => false)
+  end
+
+  def self.down
+    drop_table :users
+  end
+end
+
+== Postgres Notes
+
+The postgres code was heavily borrowed from: http://valgogtech.blogspot.com/2008/04/table-partitioning-automation-triggers.html
+
+In order for postgres partitioning to work most effectively, you need to make sure you have 
+constraint_exclusion set to 'on' or 'partition' in your postgresql.conf
+
+You'll also need to add the following monkey-patch:
+
+  class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
+    # partition triggers can't return values. :(
+    def supports_insert_with_returning?
+      false
+    end
+  end
