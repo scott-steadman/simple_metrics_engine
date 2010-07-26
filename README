@@ -1,3 +1,74 @@
 === Simple Metrics Engine
 
 This engine provides simple metrics.
+
+=== Installation
+
+  script/plugin install git://github.com/ss/simple_metrics_engine.git
+  
+=== Example
+
+Configure the engine for 15-minute granularity.
+This means metrics will be rolled up into 15-minute periods starting every hour on the hour.
+
+in config/initializers/simple_metrics_engine.rb
+
+  Sme.configure do |config|
+
+    config.granularity = 15.minutes
+
+  end
+
+Modify your User controller to log a visit/conversion
+
+in app/controller/users_controller.rb:
+  class UsersController < ApplicationController
+
+    def index
+      log_visitation
+      ...
+    end
+
+    def create
+      ...
+      log_conversion if @user.valid?
+    end
+
+  private
+
+    def log_visitation
+      Sme::Log.create(:event => 'user|visit')
+      Sme::Log.create(:event => "user|visit|#{country}")
+    end
+
+    def log_conversion
+      Sme::Log.create(:event => 'user|conversion', :user_id => @user.id, :notes => metrics_notes.to_json)
+      Sme::Log.create(:event => "user|conversion|#{country}", :user_id => @user.id)
+    end
+
+    def metrics_notes
+      {
+        :ab_test_button_text => ab_test_button_text,
+        :foo => 'bar',
+      }
+    end
+
+  end # class UsersController
+
+Instead of using the create action, you could add an after_create filter to your User model:
+
+in app/models/user.rb:
+  class User < ActiveRecord::Base
+
+    after_create :log_conversion
+
+    def log_conversion_event
+      Sme::Log.create(:event => 'user|conversion', :user_id => id)
+    end
+
+  end # class User
+
+Create a cron job that runs the +sme:update_metrics+ rake task:
+
+HOME=<rails root>
+*/15 * * * * rake sme:update_metrics >> $HOME/log/sme_update_metrics.log 2>&1

@@ -15,3 +15,5 @@ config.action_controller.perform_caching             = false
 
 # Don't care if the mailer can't send
 config.action_mailer.raise_delivery_errors = false
+
+config.action_controller.session = { :key => "_dev_session", :secret => "218d878f47b437169e7de9975d2e1286" }
