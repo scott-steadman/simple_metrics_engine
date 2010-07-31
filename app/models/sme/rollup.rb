@@ -34,26 +34,71 @@ class Sme::Rollup < ActiveRecord::Base
     from = opts[:from] ? opts[:from].to_time : default_range.first
     to   = opts[:to]   ? opts[:to].to_time   : default_range.last
 
+    each_period(from, to) do |period|
+      puts "Updating metrics from #{period.first.localtime} to #{period.last.localtime}..." if opts[:verbose]
+      generate_rollups(period)
+    end
+  end
+
+  def self.each_period(from, to, inc=granularity)
     from, to = to, from if to < from
 
     while from < to do
-      period = period_for(from)
-      puts "Updating metrics from #{period.first} to #{period.last}..." if opts[:verbose]
-      generate_rollups(period)
-      from += granularity
+      yield period_for(from)
+      from += inc
     end
-
   end
 
-private
+  def self.metrics_for(*ranges)
+    hash = ranges.last.is_a?(Hash) ? ranges.pop : {}
+
+    if ranges.size > 1
+      ranges.flatten.each {|range| metrics_for(range, hash)}
+    else
+      range = period_for(ranges.first)
+      merge_sum(range, hash,
+        sum(:value, :conditions => ['start_time >= ? AND end_time <= ?', range.first, range.last], :group => :event)
+      )
+    end
+
+    hash
+  end
+
+  def self.merge_sum(range, to, sum)
+    sum.each do |event, value|
+      to[event] ||= {}
+      to[event].merge!(range => value)
+    end
+    to
+  end
 
   def self.default_range
     period_for(Time.now - granularity)
   end
 
   def self.period_for(time)
-    from = time - (time.to_i - granularity) % granularity
-    (from.utc .. (from + granularity).utc)
+    case time
+      when Range
+        time = time.last .. time.first if time.last < time.first
+        (round_down(time.first) .. round_up(time.last))
+      else
+        time = round_down(time)
+        (time .. (time + granularity))
+    end
+  end
+
+  def self.round_down(time)
+    time = time.to_time.to_i # also handily gets rid of usec
+    Time.at(on_boundary?(time) ? time : time - (time - granularity) % granularity).utc
+  end
+
+  def self.round_up(time)
+    time = time.to_time.to_i # also handily gets rid of usec
+    Time.at(on_boundary?(time) ? time : time - time % granularity + granularity).utc
+  end
+
+  def self.on_boundary?(time)
+    (0 == (time.to_i % granularity))
   end
 
   def self.granularity

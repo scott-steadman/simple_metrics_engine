@@ -1,15 +1,21 @@
 module Sme
   class Config
 
-    # timespan for log rollups
     attr_accessor :granularity
 
-    # event hierarchy separator
     attr_accessor :event_separator
+
+    attr_accessor :report_intervals
 
     def initialize
       @granularity = 1.hour
       @event_separator = '|'
+      @report_intervals = [
+        {'1 hour'   =>  1.hour},
+        {'1 day'    =>  1.days},
+        {'1 week'   =>  1.week},
+        {'28 days'  => 28.days},
+      ]
     end
 
   end
