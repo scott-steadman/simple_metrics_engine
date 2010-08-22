@@ -1,4 +1,6 @@
 
 Need to make sure metrics page is rendered for user's timezone.
 
+Make sure it works as a plugin.
+
 Need to add calculated metrics (sums, percentages)
