@@ -1,0 +1,5 @@
+<form>
+  Interval: <%= select_tag :interval, options_for_select(%w[hour day week month], params[:interval]) %>
+  Columns: <%= select_tag :interval_count, options_for_select((4 .. 20).to_a, params[:interval_count].to_i) %>
+  <%= submit_tag 'Update' %>
+</form>

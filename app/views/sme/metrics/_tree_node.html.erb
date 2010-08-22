@@ -1,0 +1,18 @@
+<%- if tree.keys.first.is_a?(String) -%>
+  <%- parent ||= [] -%>
+  <%- tree.keys.sort.each do |key| %>
+    <tr>
+      <td <%= "colspan='#{ranges.size + 1}'" unless tree[key].has_key?(ranges.last) %>>
+        <%= leader(parent) %><b><%= key %></b>
+      </td>
+    <%- if tree[key].has_key?(ranges.last) -%>
+      <%- ranges.each do |range| -%>
+        <td align='right'><%= number_with_delimiter(tree[key][range]) rescue '&nbsp;' %></td>
+      <%- end -%>
+    <%- end -%>
+    </tr>
+    <%- if tree[key].is_a?(Hash) -%>
+      <%= render :partial => 'tree_node', :locals => { :tree => tree[key], :parent => parent + [key] } %>
+    <%- end -%>
+  <% end %>
+<% end %>

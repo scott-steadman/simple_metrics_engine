@@ -1,0 +1,10 @@
+<%= render :partial => 'span_chooser' %>
+<table border='1'>
+  <tr>
+    <th>Metric</th>
+    <%- ranges.each do |range| -%>
+    <th><%= range_header(range) %></th>
+    <%- end -%>
+  </tr>
+  <%= render :partial => 'tree_node', :locals => { :tree => @metrics } %>
+</table>
