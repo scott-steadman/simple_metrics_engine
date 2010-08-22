@@ -2,15 +2,15 @@ module Sme::MetricsHelper
 
   def range_header(range)
     if monthly_range?(range)
-      range.first.localtime.to_s(:monthly_header)
+      range.first.to_s(:monthly_header)
     elsif weekly_range?(range)
-      "#{range.first.localtime.to_s(:weekly_header)} - #{range.last.localtime.to_s(:weekly_header)}"
+      "#{range.first.to_s(:weekly_header)} - #{range.last.to_s(:weekly_header)}"
     elsif daily_range?(range)
-      range.first.localtime.to_s(:daily_header)
+      range.first.to_s(:daily_header)
     elsif range.is_a?(Range)
-      range.last.localtime.to_s(:granular_header)
+      range.last.to_s(:granular_header)
     else
-      range.localtime.to_s(:granular_header)
+      range.to_s(:granular_header)
     end
   end
 

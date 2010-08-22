@@ -6,7 +6,6 @@ class Sme::MetricsControllerTest < ActionController::TestCase
 
   test 'index with no parameters' do
     create_rollups('2010-05-20 12:59:00'.to_time .. '2010-05-21 12:59:00'.to_time)
-    pp :all, Sme::Rollup.all
     ranges = [
       '2010-05-21 12:59:00',                      # hourly
       '2010-05-21 00:00:00..2010-05-22 00:00:00', # daily
@@ -14,7 +13,6 @@ class Sme::MetricsControllerTest < ActionController::TestCase
       '2010-05-01 00:00:00..2010-06-01 00:00:00', # monthly
     ]
     get :index, :ranges => ranges.join(',')
-    puts @response.body
 
     assert_select 'select[id=interval]' do
       assert_select 'option[value=day]'
