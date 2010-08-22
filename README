@@ -71,4 +71,4 @@ in app/models/user.rb:
 Create a cron job that runs the +sme:update_metrics+ rake task:
 
 HOME=<rails root>
-*/15 * * * * rake sme:update_metrics >> $HOME/log/sme_update_metrics.log 2>&1
+0 * * * * rake sme:rollup_logs >> $HOME/log/sme_rollup_logs.log 2>&1
