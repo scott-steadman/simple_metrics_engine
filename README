@@ -5,21 +5,16 @@ This engine provides simple metrics.
 === Installation
 
   script/plugin install git://github.com/ss/simple_metrics_engine.git
+
+=== Test
+
+  rake sme:generate_dummy_data
+  script/server
+  point your browser to http://localhost:3000/sme
   
-=== Example
+=== Usage
 
-Configure the engine for 15-minute granularity.
-This means metrics will be rolled up into 15-minute periods starting every hour on the hour.
-
-in config/initializers/simple_metrics_engine.rb
-
-  Sme.configure do |config|
-
-    config.granularity = 15.minutes
-
-  end
-
-Modify your User controller to log a visit/conversion
+Modify your User controller to log a visits and conversions
 
 in app/controller/users_controller.rb:
   class UsersController < ApplicationController
@@ -55,7 +50,7 @@ in app/controller/users_controller.rb:
 
   end # class UsersController
 
-Instead of using the create action, you could add an after_create filter to your User model:
+Alternatively, you can use an after_create filter to your User model:
 
 in app/models/user.rb:
   class User < ActiveRecord::Base
@@ -68,7 +63,21 @@ in app/models/user.rb:
 
   end # class User
 
-Create a cron job that runs the +sme:update_metrics+ rake task:
+Create a cron job that runs the +sme:rollup_logs+ rake task:
 
 HOME=<rails root>
-0 * * * * rake sme:rollup_logs >> $HOME/log/sme_rollup_logs.log 2>&1
+1 * * * * rake sme:rollup_logs >> $HOME/log/sme_rollup_logs.log 2>&1
+
+=== Advanced
+
+Configure the engine for 15-minute granularity.
+This means metrics will be rolled up into 15-minute periods starting every hour on the hour.
+
+in config/initializers/simple_metrics_engine.rb
+
+  Sme.configure do |config|
+
+    config.granularity = 15.minutes
+
+  end
+
