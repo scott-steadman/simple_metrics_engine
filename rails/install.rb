@@ -8,4 +8,4 @@ Dir["#{Rails.root}/vendor/plugins/simple_metrics_engine/db/migrate/*.rb"].each d
   FileUtils.cp(file, "#{Rails.root}/db/migrate")
 end
 
-`rake db:migrate`
+system 'rake db:migrate'
