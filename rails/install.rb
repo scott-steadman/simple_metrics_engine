@@ -1,4 +1,6 @@
 
+puts 'Running install script...'
+
 # copy migrations
 FileUtils.mkdir_p("#{Rails.root}/db/migrate")
 Dir["#{Rails.root}/vendor/plugins/simple_metrics_engine/db/migrate/*.rb"].each do |file|
@@ -6,4 +8,4 @@ Dir["#{Rails.root}/vendor/plugins/simple_metrics_engine/db/migrate/*.rb"].each d
   FileUtils.cp(file, "#{Rails.root}/db/migrate")
 end
 
-sh 'rake db:migrate'
+`rake db:migrate`
