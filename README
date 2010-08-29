@@ -14,6 +14,15 @@ This engine provides simple metrics.
   
 === Usage
 
+Modify your ApplicationController to set the timezone so your metrics dates will be local
+
+in app/controller/application_controller.rb:
+  class ApplicationController < ActionController::Base
+
+    before_filter :set_timezone
+
+  end
+
 Modify your User controller to log a visits and conversions
 
 in app/controller/users_controller.rb:
@@ -74,10 +83,6 @@ Configure the engine for 15-minute granularity.
 This means metrics will be rolled up into 15-minute periods starting every hour on the hour.
 
 in config/initializers/simple_metrics_engine.rb
-
   Sme.configure do |config|
-
     config.granularity = 15.minutes
-
   end
-

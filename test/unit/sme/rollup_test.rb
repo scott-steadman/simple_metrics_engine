@@ -97,7 +97,7 @@ module Sme
     def create_logs(*times)
       times = [Time.now] if times.empty?
       times.each do |time|
-        time = time.localtime
+        time = time.utc
         Log.create!(:event => %w[user visit].join(sep), :created_at => time)
         Log.create!(:event => "user|visit", :created_at => time)
         Log.create!(:event => "user#{sep}conversion", :user_id => 1, :created_at => time)

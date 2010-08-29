@@ -20,6 +20,7 @@ class Sme::Rollup < ActiveRecord::Base
   set_table_name :sme_rollups
 
   def self.generate_rollups(range=default_range)
+    range = range.first.utc .. range.last.utc
     Sme::Log.count(:conditions => {:created_at => range}, :group => :event).each do |event, count|
       conditions = {:start_time => range.first, :end_time => range.last, :event => event}
       if record = first(:conditions => conditions)
@@ -57,7 +58,7 @@ class Sme::Rollup < ActiveRecord::Base
     else
       range = period_for(ranges.first)
       merge_sum(range, hash,
-        sum(:value, :conditions => ['start_time >= ? AND end_time <= ?', range.first, range.last], :group => :event)
+        sum(:value, :conditions => ['start_time >= ? AND end_time <= ?', range.first.utc, range.last.utc], :group => :event)
       )
     end
 
@@ -73,7 +74,7 @@ class Sme::Rollup < ActiveRecord::Base
   end
 
   def self.default_range
-    period_for(Time.now - granularity)
+    period_for(Time.now.in_time_zone - granularity)
   end
 
   def self.period_for(time)
@@ -89,12 +90,12 @@ class Sme::Rollup < ActiveRecord::Base
 
   def self.round_down(time)
     time = time.to_time.to_i # also handily gets rid of usec
-    Time.at(on_boundary?(time) ? time : time - (time - granularity) % granularity).utc
+    Time.at(on_boundary?(time) ? time : time - (time - granularity) % granularity)
   end
 
   def self.round_up(time)
     time = time.to_time.to_i # also handily gets rid of usec
-    Time.at(on_boundary?(time) ? time : time - time % granularity + granularity).utc
+    Time.at(on_boundary?(time) ? time : time - time % granularity + granularity)
   end
 
   def self.on_boundary?(time)

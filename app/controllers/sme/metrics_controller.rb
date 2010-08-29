@@ -2,6 +2,8 @@ require 'sme/extensions/hash'
 
 class Sme::MetricsController < ApplicationController
 
+  before_filter :set_sme_timezone
+
   def index
     @metrics = Sme::Rollup.metrics_for(*ranges).to_tree(Sme.configuration.event_separator)
   end
@@ -66,6 +68,15 @@ private
 
   def granularity
     Sme.configuration.granularity
+  end
+
+  def set_sme_timezone
+    Time.zone = sme_timezone || cookies[:sme_timezone] || 'Pacific Time (US & Canada)'
+    cookies[:sme_timezone] = Time.zone.name
+  end
+
+  def sme_timezone
+    params[:sme_timezone] && params[:sme_timezone].to_s
   end
 
 end # class Sme::MetricsController
