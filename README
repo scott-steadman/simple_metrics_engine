@@ -14,16 +14,19 @@ This engine provides simple metrics.
   
 === Usage
 
-Modify your ApplicationController to set the timezone so your metrics dates will be local
+Configure the plugin.
 
-in app/controller/application_controller.rb:
-  class ApplicationController < ActionController::Base
+in config/initializers/simple_metrics_engine.rb
+  Sme.configure do |config|
 
-    before_filter :set_timezone
-
+    # only allow admins to access metrics
+    config.permission_check { redirect_to login_path and return false unless current_user.admin? }
+    
+    # (Optional) Metrics will be rolled up into 15-minute periods starting every hour on the hour.
+    config.granularity = 15.minutes
   end
 
-Modify your User controller to log a visits and conversions
+Modify your User controller to log a visits and conversions.
 
 in app/controller/users_controller.rb:
   class UsersController < ApplicationController
@@ -77,12 +80,4 @@ Create a cron job that runs the +sme:rollup_logs+ rake task:
 HOME=<rails root>
 1 * * * * rake sme:rollup_logs >> $HOME/log/sme_rollup_logs.log 2>&1
 
-=== Advanced
 
-Configure the engine for 15-minute granularity.
-This means metrics will be rolled up into 15-minute periods starting every hour on the hour.
-
-in config/initializers/simple_metrics_engine.rb
-  Sme.configure do |config|
-    config.granularity = 15.minutes
-  end

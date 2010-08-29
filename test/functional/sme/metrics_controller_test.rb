@@ -82,6 +82,23 @@ class Sme::MetricsControllerTest < ActionController::TestCase
     assert_equal time_str.to_time, @controller.send(:from)
   end
 
+  test 'configured before_filter' do
+    Sme.configure do |config|
+      config.permission_check {redirect_to '/foo' and return false }
+    end
+
+    get :index
+
+    assert_redirected_to '/foo'
+
+    Sme.configure do |config|
+      config.permission_check
+    end
+
+    get :index
+    assert_response :success
+  end
+
 private
 
   def create_rollups(*times)
