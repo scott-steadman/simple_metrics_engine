@@ -32,8 +32,8 @@ class Sme::Rollup < ActiveRecord::Base
   end
 
   def self.update_metrics(opts={})
-    from = opts[:from] ? opts[:from].to_time : default_range.first
-    to   = opts[:to]   ? opts[:to].to_time   : default_range.last
+    from = opts[:from] ? to_time(opts[:from]) : default_range.first
+    to   = opts[:to]   ? to_time(opts[:to])   : default_range.last
 
     each_period(from, to) do |period|
       puts "Updating metrics from #{period.first.localtime} to #{period.last.localtime}..." if opts[:verbose]
@@ -66,6 +66,7 @@ class Sme::Rollup < ActiveRecord::Base
   end
 
   def self.merge_sum(range, to, sum)
+    range = range.first.in_time_zone .. range.last.in_time_zone
     sum.each do |event, value|
       to[event] ||= {}
       to[event].merge!(range => value)
@@ -74,7 +75,7 @@ class Sme::Rollup < ActiveRecord::Base
   end
 
   def self.default_range
-    period_for(Time.now.in_time_zone - granularity)
+    period_for(Time.zone.now - granularity)
   end
 
   def self.period_for(time)
@@ -89,12 +90,12 @@ class Sme::Rollup < ActiveRecord::Base
   end
 
   def self.round_down(time)
-    time = time.to_time.to_i # also handily gets rid of usec
+    time = to_time(time).to_i # also handily gets rid of usec
     Time.at(on_boundary?(time) ? time : time - (time - granularity) % granularity)
   end
 
   def self.round_up(time)
-    time = time.to_time.to_i # also handily gets rid of usec
+    time = to_time(time).to_i # also handily gets rid of usec
     Time.at(on_boundary?(time) ? time : time - time % granularity + granularity)
   end
 
@@ -104,6 +105,10 @@ class Sme::Rollup < ActiveRecord::Base
 
   def self.granularity
     Sme.configuration.granularity
+  end
+
+  def self.to_time(time)
+    time.is_a?(String) ? Time.zone.parse(time) : time
   end
 
 end

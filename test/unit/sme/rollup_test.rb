@@ -4,17 +4,17 @@ module Sme
   class RollupTest < ActiveRecord::TestCase
 
     test 'period_for with time' do
-      expected = '2010-05-21 12:00:00'.to_time .. '2010-05-21 13:00:00'.to_time
-      assert_equal expected, Rollup.period_for('2010-05-21 12:59:00'.to_time)
+      expected = Time.zone.parse('2010-05-21 12:00:00') .. Time.zone.parse('2010-05-21 13:00:00')
+      assert_equal expected, Rollup.period_for('2010-05-21 12:59:00')
     end
 
     test 'period_for with string' do
-      expected = '2010-05-21 12:00:00'.to_time .. '2010-05-21 13:00:00'.to_time
+      expected = Time.zone.parse('2010-05-21 12:00:00') .. Time.zone.parse('2010-05-21 13:00:00')
       assert_equal expected, Rollup.period_for('2010-05-21 12:59:00')
     end
 
     test 'period_for with range' do
-      expected = '2010-05-21 12:00:00'.to_time .. '2010-05-21 15:00:00'.to_time
+      expected = Time.zone.parse('2010-05-21 12:00:00') .. Time.zone.parse('2010-05-21 15:00:00')
       assert_equal expected, Rollup.period_for('2010-05-21 12:59:00' .. '2010-05-21 14:59:00')
     end
 
@@ -113,11 +113,11 @@ module Sme
     end
 
     def round_down(time)
-      Rollup.round_down(time)
+      Rollup.round_down(time).in_time_zone
     end
 
     def round_up(time)
-      Rollup.round_up(time)
+      Rollup.round_up(time).in_time_zone
     end
 
   end # class RollupTest

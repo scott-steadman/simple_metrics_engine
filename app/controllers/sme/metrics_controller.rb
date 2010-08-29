@@ -20,7 +20,7 @@ private
   def ranges
     @ranges ||= ranges_from_params || begin
       ranges = []
-      current = from
+      current = from.in_time_zone
 
       interval_count.times do
         case interval
@@ -47,12 +47,12 @@ private
     return unless params[:ranges]
     params[:ranges].split(',').inject([]) do |ret, range|
       from, to = range.split('..')
-      ret << (to.nil? ? from.to_time : (from.to_time .. to.to_time))
+      ret << (to.blank? ? to_time(from) : (to_time(from) .. to_time(to)))
     end
   end
 
   def from
-    @from ||= params[:from].blank? ? default_range.first : params[:from].to_time
+    @from ||= params[:from].blank? ? default_range.first : to_time(params[:from])
   end
 
   def interval
@@ -74,6 +74,10 @@ private
 
   def sme_timezone
     params[:sme_timezone] && params[:sme_timezone].to_s
+  end
+
+  def to_time(time)
+    Sme::Rollup.to_time(time)
   end
 
 end # class Sme::MetricsController

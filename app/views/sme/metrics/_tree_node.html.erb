@@ -1,13 +1,14 @@
 <%- if tree.keys.first.is_a?(String) -%>
   <%- parent ||= [] -%>
   <%- tree.keys.sort.each do |key| %>
+    <% values_present = ! (tree[key].keys & ranges).empty? %>
     <tr>
-      <td <%= "colspan='#{ranges.size + 1}'" unless tree[key].has_key?(ranges.last) %>>
+      <td <%= "colspan='#{ranges.size + 1}'" unless values_present %>>
         <%= leader(parent) %><b><%= key %></b>
       </td>
-    <%- if tree[key].has_key?(ranges.last) -%>
+    <%- if values_present -%>
       <%- ranges.each do |range| -%>
-        <td align='right'><%= number_with_delimiter(tree[key][range]) rescue '&nbsp;' %></td>
+        <td align='right'><%= number_with_delimiter(tree[key][range]) rescue 'n/a' %></td>
       <%- end -%>
     <%- end -%>
     </tr>

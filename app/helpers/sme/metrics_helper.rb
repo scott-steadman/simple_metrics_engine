@@ -15,7 +15,7 @@ module Sme::MetricsHelper
   end
 
   def number_with_delimiter(number, *args)
-    return '&nbsp;' if number.nil?
+    return '0' if number.nil?
     number = number.to_i if number.to_i == number
     super(number, *args)
   end
