@@ -8,6 +8,7 @@ class Sme::MetricsControllerTest < ActionController::TestCase
     create_rollups('2010-05-20 12:59:00'.to_time .. '2010-05-21 12:59:00'.to_time)
     ranges = [
       '2010-05-21 12:59:00',                      # hourly
+      '2010-05-21 12:00:00..2010-05-21 13:00:00', # hourly
       '2010-05-21 00:00:00..2010-05-22 00:00:00', # daily
       '2010-05-17 00:00:00..2010-05-24 00:00:00', # weekly
       '2010-05-01 00:00:00..2010-06-01 00:00:00', # monthly
@@ -27,12 +28,13 @@ class Sme::MetricsControllerTest < ActionController::TestCase
 
     assert_select 'table>tr' do
       assert_select 'th', 'May 21 12:59',     'time header missing'
+      assert_select 'th', 'May 21 13:00',     'time header missing'
       assert_select 'th', 'May 21',           'day header missing'
       assert_select 'th', 'May 17 - May 24',  'week header missing'
       assert_select 'th', 'May',              'month header missing'
     end
 
-    assert_select 'table>tr>td[colspan=5]>b', 'one', 'headers should have colspan'
+    assert_select 'table>tr>td[colspan=6]>b', 'one', 'headers should have colspan'
     assert_select 'table>tr>td[align=right]', '12', 'missing data'
   end
 
@@ -70,6 +72,14 @@ class Sme::MetricsControllerTest < ActionController::TestCase
       @controller.params[:ranges] = param
       assert_equal expected, @controller.send(:ranges_from_params), "Incorrect parsing of: #{param}"
     end
+  end
+
+  test 'from' do
+    assert_equal Sme::Rollup.default_range.first, @controller.send(:from)
+    reset_controller
+    time_str = '2010-05-21 12:59:00'
+    @controller.params[:from] = time_str
+    assert_equal time_str.to_time, @controller.send(:from)
   end
 
 private

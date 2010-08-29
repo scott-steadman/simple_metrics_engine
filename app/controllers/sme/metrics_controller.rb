@@ -66,10 +66,6 @@ private
     @default_range ||= Sme::Rollup.default_range
   end
 
-  def granularity
-    Sme.configuration.granularity
-  end
-
   def set_sme_timezone
     Time.zone = sme_timezone || cookies[:sme_timezone] || 'Pacific Time (US & Canada)'
     cookies[:sme_timezone] = Time.zone.name
