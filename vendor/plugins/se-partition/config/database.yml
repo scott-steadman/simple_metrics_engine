@@ -1,6 +1,0 @@
-test:
-  adapter: postgresql
-  host: localhost
-  encoding: utf8
-  username: postgres
-  database: part_test

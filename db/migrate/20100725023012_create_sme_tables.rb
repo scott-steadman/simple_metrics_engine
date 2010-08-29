@@ -10,7 +10,7 @@ class CreateSmeTables < ActiveRecord::Migration
     add_index :sme_logs, :created_at
     add_index :sme_logs, [:event, :user_id]
 
-    if 'postgresql' == ActiveRecord::Base.configurations[RAILS_ENV]['adapter']
+    if defined?(SE::Partition) && 'postgresql' == ActiveRecord::Base.configurations[RAILS_ENV]['adapter']
       SE::Partition.partition(Sme::Log, :created_at, :verbose => false)
     end
 
