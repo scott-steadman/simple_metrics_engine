@@ -1,6 +1,7 @@
 require 'sme/extensions/hash'
 
 class Sme::MetricsController < ApplicationController
+  unloadable
 
   before_filter :set_sme_timezone
 
