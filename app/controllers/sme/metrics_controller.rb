@@ -6,7 +6,7 @@ class Sme::MetricsController < ApplicationController
   before_filter :set_sme_timezone
 
   def index
-    @metrics = Sme::Rollup.metrics_for(*ranges).to_tree(Sme.configuration.event_separator)
+    @metrics = Sme::Rollup.metrics_for(*ranges).to_tree(event_separator)
   end
 
   def chart
@@ -78,6 +78,10 @@ private
 
   def to_time(time)
     Sme::Rollup.to_time(time)
+  end
+
+  def event_separator
+    Sme.configuration.event_separator
   end
 
 end # class Sme::MetricsController
