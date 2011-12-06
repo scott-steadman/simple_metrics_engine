@@ -1,20 +1,31 @@
 module Sme
   class Config
 
-    attr_accessor :event_separator, :granularity, :report_intervals
+    # The seperator used to delimit parts of an event (default = '|').
+    #
+    # call-seq:
+    #   config.event_separator = '/'
+    #
+    attr_accessor :event_separator
+
+    # Rollup window (default = 1.hour).
+    #
+    # call-seq:
+    #   config.rollup_window = 15.minutes
+    #
+    attr_accessor :rollup_window
 
     def initialize
-      @event_separator = '|'
-      @granularity = 1.hour
-      @report_intervals = [
-        {'1 hour'   =>  1.hour},
-        {'1 day'    =>  1.days},
-        {'1 week'   =>  1.week},
-        {'28 days'  => 28.days},
-      ]
+      @event_separator  = '|'
+      @rollup_window    = 1.hour
     end
 
-    def permission_check(*args, &blk)
+    # Specify the permission check block.
+    #
+    # call-seq:
+    #  config.permission_check { redirect_to login_path and return false unless current_user.admin? }
+    #
+    def permission_check(&blk)
       if block_given?
         Sme::MetricsController.prepend_before_filter(:permission_check)
         Sme::MetricsController.send(:define_method, :permission_check, &blk)

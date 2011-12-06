@@ -57,12 +57,12 @@ module Sme
       expected = Time.parse('2010-05-21 12:00:00 UTC') .. Time.parse('2010-05-21 13:00:00 UTC')
       assert_equal expected, Rollup.period_for('2010-05-21 12:50:00 UTC'), 'period_for should handle String parameter'
       assert_equal expected, Rollup.period_for(Time.parse('2010-05-21 12:50:00 UTC')), 'period_for should handle Time parameter'
-      assert_equal expected, Rollup.period_for('2010-05-21 12:30:00 UTC' .. '2010-05-21 12:50:00 UTC'), 'period_for should handle String Range less than granularity'
-      assert_equal expected, Rollup.period_for(Time.parse('2010-05-21 12:30:00 UTC') .. Time.parse('2010-05-21 12:50:00 UTC')), 'period_for should handle Time Range less than granularity'
+      assert_equal expected, Rollup.period_for('2010-05-21 12:30:00 UTC' .. '2010-05-21 12:50:00 UTC'), 'period_for should handle String Range less than rollup_window'
+      assert_equal expected, Rollup.period_for(Time.parse('2010-05-21 12:30:00 UTC') .. Time.parse('2010-05-21 12:50:00 UTC')), 'period_for should handle Time Range less than rollup_window'
 
       expected = Time.parse('2010-05-21 11:00:00 UTC') .. Time.parse('2010-05-21 13:00:00 UTC')
-      assert_equal expected, Rollup.period_for('2010-05-21 11:30:00 UTC' .. '2010-05-21 12:50:00 UTC'), 'period_for should handle String Range greater than granularity'
-      assert_equal expected, Rollup.period_for(Time.parse('2010-05-21 11:30:00 UTC') .. Time.parse('2010-05-21 12:50:00 UTC')), 'period_for should handle Time Range greater than granularity'
+      assert_equal expected, Rollup.period_for('2010-05-21 11:30:00 UTC' .. '2010-05-21 12:50:00 UTC'), 'period_for should handle String Range greater than rollup_window'
+      assert_equal expected, Rollup.period_for(Time.parse('2010-05-21 11:30:00 UTC') .. Time.parse('2010-05-21 12:50:00 UTC')), 'period_for should handle Time Range greater than rollup_window'
     end
 
     test 'round_down' do

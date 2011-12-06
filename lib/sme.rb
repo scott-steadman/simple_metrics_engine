@@ -6,13 +6,14 @@ module Sme
   #
   #   Sme.configure do |config|
   #
-  #     config.granularity = 15.minutes
+  #     config.rollup_window = 15.minutes
   #
   #   end
   def self.configure
     yield configuration
   end
 
+  # Returns the current configuration
   def self.configuration
     @configuration ||= Sme::Config.new
   end

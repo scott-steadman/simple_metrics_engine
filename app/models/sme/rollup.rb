@@ -41,7 +41,7 @@ class Sme::Rollup < ActiveRecord::Base
     end
   end
 
-  def self.each_period(from, to, inc=granularity)
+  def self.each_period(from, to, inc=rollup_window)
     from, to = to, from if to < from
 
     while from < to do
@@ -75,7 +75,7 @@ class Sme::Rollup < ActiveRecord::Base
   end
 
   def self.default_range
-    period_for(Time.zone.now - granularity)
+    period_for(Time.zone.now - rollup_window)
   end
 
   def self.period_for(time)
@@ -85,26 +85,26 @@ class Sme::Rollup < ActiveRecord::Base
         (round_down(time.first) .. round_up(time.last))
       else
         time = round_down(time)
-        (time .. (time + granularity))
+        (time .. (time + rollup_window))
     end
   end
 
   def self.round_down(time)
     time = to_time(time).to_i # also handily gets rid of usec
-    Time.at(on_boundary?(time) ? time : time - (time - granularity) % granularity)
+    Time.at(on_boundary?(time) ? time : time - (time - rollup_window) % rollup_window)
   end
 
   def self.round_up(time)
     time = to_time(time).to_i # also handily gets rid of usec
-    Time.at(on_boundary?(time) ? time : time - time % granularity + granularity)
+    Time.at(on_boundary?(time) ? time : time - time % rollup_window + rollup_window)
   end
 
   def self.on_boundary?(time)
-    (0 == (time.to_i % granularity))
+    (0 == (time.to_i % rollup_window))
   end
 
-  def self.granularity
-    Sme.configuration.granularity
+  def self.rollup_window
+    Sme.configuration.rollup_window
   end
 
   def self.to_time(time)

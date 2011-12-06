@@ -21,9 +21,9 @@ in config/initializers/simple_metrics_engine.rb
 
     # only allow admins to access metrics
     config.permission_check { redirect_to login_path and return false unless current_user.admin? }
-    
+   
     # (Optional) Metrics will be rolled up into 15-minute periods starting every hour on the hour.
-    config.granularity = 15.minutes
+    config.rollup_window = 15.minutes
   end
 
 Modify your User controller to log a visits and conversions.
@@ -78,6 +78,6 @@ in app/models/user.rb:
 Create a cron job that runs the +sme:rollup_logs+ rake task:
 
 HOME=<rails root>
-1 * * * * rake sme:rollup_logs >> $HOME/log/sme_rollup_logs.log 2>&1
+0/15 * * * * rake sme:rollup_logs >> $HOME/log/sme_rollup_logs.log 2>&1
 
 
