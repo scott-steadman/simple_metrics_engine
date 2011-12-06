@@ -44,13 +44,13 @@ in app/controller/users_controller.rb:
   private
 
     def log_visitation
-      Sme::Log.create(:event => 'user|visit')
-      Sme::Log.create(:event => "user|visit|#{country}")
+      Sme.log('user|visit')
+      Sme.log("user|visit|#{country}")
     end
 
     def log_conversion
-      Sme::Log.create(:event => 'user|conversion', :user_id => @user.id, :notes => metrics_notes.to_json)
-      Sme::Log.create(:event => "user|conversion|#{country}", :user_id => @user.id)
+      Sme.log('user|conversion', :user_id => @user.id, :notes => metrics_notes.to_json)
+      Sme.log("user|conversion|#{country}", :user_id => @user.id)
     end
 
     def metrics_notes
@@ -70,7 +70,7 @@ in app/models/user.rb:
     after_create :log_conversion
 
     def log_conversion_event
-      Sme::Log.create(:event => 'user|conversion', :user_id => id)
+      Sme.log('user|conversion', :user_id => id)
     end
 
   end # class User

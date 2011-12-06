@@ -14,9 +14,9 @@ namespace :sme do
   task :coverage => [:environment] do
     excludes = %w[boot.rb config vendor].join(',')
     output_dir = "#{Rails.root}/public/coverage"
-    files = Dir['test/{unit,functional}/**/*_test.rb'].join(' ')
     rm_rf(output_dir)
-    sh "rcov --rails -t --sort coverage -o public/coverage #{files}"
+    files = Dir['test/{unit,functional}/**/*_test.rb'].join(' ')
+    sh "rcov --rails -t --sort coverage -o public/coverage -x 'gems' #{files}"
   end
 
   desc 'Generate dummy data for testing (count=<count default 1000>)'
