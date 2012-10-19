@@ -27,4 +27,15 @@ class Sme::Log < ActiveRecord::Base
     super(attributes.merge!('_data' => data.to_json))
   end
 
+  def method_missing(name, *args)
+    return data_hash[name.to_s] if data_hash.has_key?(name.to_s)
+    super
+  end
+
+private
+
+  def data_hash
+    @data_hash ||= ActiveSupport::JSON::decode(_data)
+  end
+
 end

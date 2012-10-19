@@ -14,4 +14,8 @@ class Sme::LogTest < ActiveRecord::TestCase
     assert_equal 'foo', Sme::Log.create!(:event => :foo).event
   end
 
+  test 'pseudo methods for _data' do
+    assert_equal 'baz', Sme::Log.new(:event => :foo, :bar => 'baz').bar
+  end
+
 end
