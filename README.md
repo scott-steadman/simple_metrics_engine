@@ -1,24 +1,38 @@
-=== Simple Metrics Engine
+# Simple Metrics Engine
 
-This engine provides simple metrics.
+This plugin provides event log based simple metrics.
 
-=== Installation
+## Installation
 
+```
   script/plugin install git://github.com/ss/simple_metrics_engine.git
+```
 
-=== Test
+## Testing
 
+```
+  rake test 
+  rake sme:coverage
+  script/server
+  point your browser to http://localhost:3000/coverage/
+```
+
+## Verification
+
+```
   rake sme:generate_dummy_data
   script/server
   point your browser to http://localhost:3000/sme
+```
   
-=== Usage
+## Usage
 
 Configure the plugin.
 
-in config/initializers/simple_metrics_engine.rb
-  Sme.configure do |config|
+in *config/initializers/simple_metrics_engine.rb*
 
+```ruby
+  Sme.configure do |config|
     # only allow admins to access metrics
     config.permission_check { redirect_to login_path and return false unless current_user.admin? }
    
@@ -32,11 +46,13 @@ in config/initializers/simple_metrics_engine.rb
     event_hash
   end
 
-  Sme.wrap!(add_user_info)
+  Sme.wrap!(method(:add_user_info))
+```
 
 Modify your User controller to log a visits and conversions.
 
-in app/controller/users_controller.rb:
+in *app/controller/users_controller.rb*:
+```ruby
   class UsersController < ApplicationController
 
     def index
@@ -69,10 +85,12 @@ in app/controller/users_controller.rb:
     end
 
   end # class UsersController
+```
 
 Alternatively, you can use an after_create filter to your User model:
 
-in app/models/user.rb:
+in *app/models/user.rb*:
+```ruby
   class User < ActiveRecord::Base
 
     after_create :log_conversion
@@ -82,10 +100,13 @@ in app/models/user.rb:
     end
 
   end # class User
+```
 
-Create a cron job that runs the +sme:rollup_logs+ rake task:
+Create a cron job that runs the *sme:rollup_logs* rake task:
 
+```cron
 HOME=<rails root>
 0/15 * * * * rake sme:rollup_logs >> $HOME/log/sme_rollup_logs.log 2>&1
+```
 
 
