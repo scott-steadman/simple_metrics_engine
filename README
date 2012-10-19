@@ -26,6 +26,14 @@ in config/initializers/simple_metrics_engine.rb
     config.rollup_window = 15.minutes
   end
 
+  # add user details to event hash
+  def add_user_info(event_hash)
+    event_hash[:user_id] ||= current_user.id
+    event_hash
+  end
+
+  Sme.wrap!(add_user_info)
+
 Modify your User controller to log a visits and conversions.
 
 in app/controller/users_controller.rb:
@@ -49,8 +57,8 @@ in app/controller/users_controller.rb:
     end
 
     def log_conversion
-      Sme.log('user|conversion', :user_id => @user.id, :notes => metrics_notes.to_json)
-      Sme.log("user|conversion|#{country}", :user_id => @user.id)
+      Sme.log('user|conversion', metrics_notes)
+      Sme.log("user|conversion|#{country}")
     end
 
     def metrics_notes
