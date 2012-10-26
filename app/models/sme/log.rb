@@ -28,14 +28,12 @@ class Sme::Log < ActiveRecord::Base
   end
 
   def method_missing(name, *args)
-    return data_hash[name.to_s] if data_hash.has_key?(name.to_s)
+    return data[name.to_s] if data.has_key?(name.to_s)
     super
   end
 
-private
-
-  def data_hash
-    @data_hash ||= ActiveSupport::JSON::decode(_data)
+  def data
+    @data ||= ActiveSupport::JSON::decode(_data)
   end
 
 end
